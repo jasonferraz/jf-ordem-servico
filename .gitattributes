@@ -1,2 +1,5 @@
-/mvnw text eol=lf
-*.cmd text eol=crlf
+# Forçar o GitHub a reconhecer o projeto como Java e ignorar o peso do HTML/CSS
+src/main/resources/static/* linguist-documentation
+*.html linguist-detectable=false
+*.css linguist-detectable=false
+*.js linguist-detectable=false
