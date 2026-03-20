@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão Ordem de Serviço</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        :root { 
+            --jf-purple: #6f42c1;
+            --jf-orange: #f38020;
+            --jf-dark: #24292e;
+            --bg-light: #f6f8fa;
+        }
+
+        body { 
+            background-color: var(--bg-light); 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; 
+            color: var(--jf-dark); 
+        }
+        
+        .navbar { 
+            background-color: var(--jf-purple) !important; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+
+        .navbar-brand { font-weight: bold; letter-spacing: 1px; color: white !important; }
+        .border-orange { border: 2px solid var(--jf-orange) !important; }
+        .card { border: 1px solid #d1d5da; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .card-title { color: var(--jf-purple); font-weight: 600; }
+
+        .btn-jf-primary { 
+            background-color: var(--jf-purple); 
+            color: white; 
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            padding: 12px;
+            transition: 0.3s;
+        }
+
+        .btn-jf-primary:hover { 
+            background-color: #5a32a3; 
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(111, 66, 193, 0.3);
+        }
+
+        .status-badge { 
+            font-size: 0.75rem; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            border-radius: 2rem; 
+            padding: 0.3rem 0.8rem; 
+        }
+
+        .badge-aberta { background-color: #fff5ca; color: #735c0f; border: 1px solid #f9e07e; }
+        .badge-finalizada { background-color: #dcffeb; color: #116329; border: 1px solid #acf2bd; }
+
+        .table thead th { background-color: #fafbfc; border-bottom: 2px solid #e1e4e8; color: #586069; }
+        .table-hover tbody tr:hover { background-color: #f6f8fa; }
+        .text-jf-purple { color: var(--jf-purple) !important; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="#">
+            <img src="favicon.png" alt="Logo" width="40" height="40" class="d-inline-block align-text-top me-2 rounded-circle border-orange">
+            <span>SISTEMA DE OS <small class="ms-2 badge bg-light text-dark fw-light" style="font-size: 0.6rem; opacity: 0.8;">PROJETO ACADÊMICO</small></span>
+        </a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card p-4">
+                <h5 class="card-title mb-3"><i class="bi bi-plus-circle-fill me-2"></i>Nova Ordem</h5>
+                <form id="osForm">
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">CLIENTE</label>
+                        <input type="text" id="cliente" class="form-control" placeholder="Nome do Cliente" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">EQUIPAMENTO</label>
+                        <input type="text" id="equipamento" class="form-control" placeholder="Ex: Notebook HP" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">DEFEITO</label>
+                        <textarea id="defeito" class="form-control" rows="2" placeholder="O que precisa ser feito?"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">ORÇAMENTO (R$)</label>
+                        <input type="number" id="orcamento" class="form-control" placeholder="0.00" step="0.01" required>
+                    </div>
+                    <button type="submit" class="btn btn-jf-primary w-100">
+                        <i class="bi bi-cloud-upload me-2"></i>SALVAR ORDEM NO SISTEMA
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0"><i class="bi bi-layers-half me-2"></i>Ordens de Serviço Ativas</h5>
+                    <button onclick="listarOS()" class="btn btn-light btn-sm border text-muted"><i class="bi bi-arrow-clockwise"></i> Atualizar</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Cliente / Equipamento</th>
+                                <th>Valor</th>
+                                <th>Status</th>
+                                <th class="text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaOS"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="text-center mt-5 mb-4 text-muted" style="font-size: 0.8rem;">
+    <hr class="w-25 mx-auto">
+    <p>Desenvolvido por <strong>Jason Ferraz</strong> como projeto de estudo em Engenharia de Software.</p>
+    <p class="small">Backend: Spring Boot | Frontend: Vanilla JS | Banco: H2 (Volátil)</p>
+</footer>
+
+<script>
+    const API_URL = 'http://localhost:8080/os';
+
+    async function listarOS() {
+        try {
+            const resp = await fetch(API_URL);
+            const dados = await resp.json();
+            const corpoTabela = document.getElementById('tabelaOS');
+            corpoTabela.innerHTML = '';
+
+            dados.forEach(os => {
+                const statusClass = os.status === 'FINALIZADA' ? 'badge-finalizada' : 'badge-aberta';
+                corpoTabela.innerHTML += `
+                    <tr>
+                        <td class="fw-bold">#${os.id}</td>
+                        <td>
+                            <div class="fw-bold text-dark">${os.cliente}</div>
+                            <small class="text-muted">${os.equipamento}</small>
+                        </td>
+                        <td class="fw-bold text-jf-purple">R$ ${parseFloat(os.orcamento).toFixed(2)}</td>
+                        <td><span class="status-badge ${statusClass}">${os.status || 'ABERTA'}</span></td>
+                        <td class="text-center">
+                            <div class="btn-group">
+                                <button onclick="imprimirOS(${os.id})" class="btn btn-sm btn-outline-dark" title="Imprimir"><i class="bi bi-printer"></i></button>
+                                <button onclick="finalizarOS(${os.id})" class="btn btn-sm btn-outline-success" title="Finalizar"><i class="bi bi-check-all"></i></button>
+                                <button onclick="excluirOS(${os.id})" class="btn btn-sm btn-outline-danger" title="Excluir"><i class="bi bi-trash3"></i></button>
+                            </div>
+                        </td>
+                    </tr>`;
+            });
+        } catch (error) {
+            console.error('Erro ao conectar com o servidor Java:', error);
+        }
+    }
+
+    document.getElementById('osForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const novaOS = {
+            cliente: document.getElementById('cliente').value,
+            equipamento: document.getElementById('equipamento').value,
+            defeito: document.getElementById('defeito').value,
+            orcamento: document.getElementById('orcamento').value,
+            status: 'ABERTA'
+        };
+
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(novaOS)
+        });
+
+        if (response.ok) {
+            document.getElementById('osForm').reset();
+            listarOS();
+        }
+    });
+
+    async function finalizarOS(id) {
+        await fetch(`${API_URL}/${id}/finalizar`, { method: 'PUT' });
+        listarOS();
+    }
+
+    async function excluirOS(id) {
+        if(confirm('Atenção: Deseja realmente excluir este registro do sistema?')) {
+            await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            listarOS();
+        }
+    }
+
+    function imprimirOS(id) {
+        window.print();
+    }
+
+    listarOS();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
